@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>음악 수업 - 리듬 비밀번호</title>
+    <style>
+        body { 
+            font-family: 'Malgun Gothic', sans-serif; 
+            text-align: center; 
+            background-color: #f4ece1; 
+            color: #3e2723;
+            margin: 0; padding: 20px;
+        }
+
+        .header-img { max-width: 700px; width: 90%; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        .container { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.8); padding: 25px; border-radius: 20px; }
+
+        /* 리듬 선택 영역 */
+        .rhythm-options { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .option-item { 
+            display: flex; flex-direction: column; align-items: center; 
+            background: white; border: 2px solid #a1887f; border-radius: 10px; padding: 5px; width: 110px; cursor: grab;
+        }
+        .option-item span { font-weight: bold; margin-bottom: 5px; color: #795548; }
+        .option-item img { width: 90px; pointer-events: none; } /* 이미지가 드래그 이벤트를 방해하지 않도록 설정 */
+
+        /* 비밀번호 슬롯 영역 */
+        .password-slots { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .slot { 
+            width: 140px; height: 130px; border: 3px dashed #8d6e63; border-radius: 12px; 
+            position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; 
+        }
+        .slot.over { background: #efebe9; border-style: solid; }
+        .slot-content { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .slot-number { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; color: #2e7d32; }
+        .slot img { width: 85%; }
+
+        .delete-btn {
+            position: absolute; top: 5px; right: 5px; width: 22px; height: 22px;
+            background: #d32f2f; color: white; border-radius: 50%; border: none;
+            cursor: pointer; display: none; font-weight: bold; font-size: 12px;
+        }
+        .slot:hover .delete-btn { display: block; }
+
+        /* 재생 중 효과 */
+        .slot.playing { 
+            border: 4px solid #2e7d32 !important; 
+            background: #e8f5e9;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #4caf50;
+            transition: 0.2s;
+        }
+
+        button { 
+            padding: 15px 50px; font-size: 1.3rem; font-weight: bold;
+            background-color: #5d4037; color: white; border: none; border-radius: 50px; 
+            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        button:hover { background-color: #3e2723; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="그림.png" class="header-img" alt="교과서 이미지">
+
+    <div class="rhythm-options">
+        <div class="option-item" draggable="true" data-id="1">
+            <span>1번</span>
+            <img src="1.png">
+        </div>
+        <div class="option-item" draggable="true" data-id="2">
+            <span>2번</span>
+            <img src="2.png">
+        </div>
+        <div class="option-item" draggable="true" data-id="3">
+            <span>3번</span>
+            <img src="3.png">
+        </div>
+        <div class="option-item" draggable="true" data-id="4">
+            <span>4번</span>
+            <img src="4.png">
+        </div>
+        <div class="option-item" draggable="true" data-id="5">
+            <span>5번</span>
+            <img src="5.png">
+        </div>
+    </div>
+
+    <div class="password-slots">
+        <div class="slot" data-index="0"></div>
+        <div class="slot" data-index="1"></div>
+        <div class="slot" data-index="2"></div>
+        <div class="slot" data-index="3"></div>
+    </div>
+
+    <button onclick="playPassword()">▶ 비밀번호 소리 듣기</button>
+</div>
+
+<script>
+    const slots = document.querySelectorAll('.slot');
+    const options = document.querySelectorAll('.option-item');
+    let selectedPassword = [null, null, null, null];
+
+    // 드래그 시작
+    options.forEach(opt => {
+        opt.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', opt.dataset.id);
+        });
+    });
+
+    // 드래그 허용 및 시각적 효과
+    slots.forEach(slot => {
+        slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            slot.classList.add('over');
+        });
+
+        slot.addEventListener('dragleave', () => {
+            slot.classList.remove('over');
+        });
+
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            slot.classList.remove('over');
+            
+            const id = e.dataTransfer.getData('text/plain');
+            const index = slot.dataset.index;
+            
+            if (id) {
+                updateSlot(index, id);
+            }
+        });
+    });
+
+    // 슬롯 업데이트 함수 (번호 + 이미지 + 삭제버튼)
+    function updateSlot(index, id) {
+        const slot = document.querySelector(`.slot[data-index="${index}"]`);
+        selectedPassword[index] = id;
+        
+        slot.innerHTML = `
+            <div class="slot-content">
+                <span class="slot-number">${id}번</span>
+                <img src="${id}.png">
+            </div>
+            <button class="delete-btn" onclick="removeRhythm(${index}, event)">X</button>
+        `;
+    }
+
+    function removeRhythm(index, event) {
+        event.stopPropagation(); // 버튼 클릭 시 부모 이벤트 방해 금지
+        const slot = document.querySelector(`.slot[data-index="${index}"]`);
+        slot.innerHTML = '';
+        selectedPassword[index] = null;
+    }
+
+    async function playPassword() {
+        for (let i = 0; i < selectedPassword.length; i++) {
+            const id = selectedPassword[i];
+            if (!id) continue;
+
+            const currentSlot = document.querySelector(`.slot[data-index="${i}"]`);
+            currentSlot.classList.add('playing');
+            
+            await playAudio(`${id}.m4a`);
+            
+            currentSlot.classList.remove('playing');
+        }
+    }
+
+    function playAudio(src) {
+        return new Promise((resolve) => {
+            const audio = new Audio(src);
+            audio.play().catch(e => console.log("오디오 파일 없음:", src));
+            audio.onended = resolve;
+        });
+    }
+</script>
+
+</body>
+</html>
