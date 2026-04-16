@@ -3,118 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>리듬 비밀번호 - EASY</title>
+    <title>리듬 비밀번호 - 태블릿 완벽 대응</title>
     <style>
-        body { 
-            font-family: 'Malgun Gothic', sans-serif; text-align: center; 
-            background-color: #fdf6e3; color: #5d4037; margin: 0; padding: 20px; 
-            touch-action: none; overflow: hidden; 
-        }
-        .container { 
-            max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.9); 
-            padding: 20px; border-radius: 20px; border: 2px solid #d7ccc8; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
-        }
-        .header-img { width: 100%; max-width: 600px; border-radius: 12px; margin-bottom: 15px; }
-
-        /* [핵심 CSS] 길게 누르기 및 선택 방지 */
-        * {
-            -webkit-touch-callout: none !important; /* iOS 메뉴 차단 */
-            -webkit-user-select: none !important;    /* 텍스트 선택 차단 */
-            user-select: none !important;
-            -webkit-user-drag: none !important;    /* 시스템 드래그 차단 */
-        }
+        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #fdf6e3; color: #5d4037; margin: 0; padding: 20px; touch-action: none; overflow: hidden; -webkit-user-select: none; user-select: none; }
+        .container { max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.9); padding: 20px; border-radius: 20px; border: 2px solid #d7ccc8; }
+        .header-img { width: 100%; max-width: 500px; border-radius: 12px; margin-bottom: 15px; pointer-events: none; }
 
         .rhythm-options { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .option-item { 
             display: flex; flex-direction: column; align-items: center; background: #fff; 
-            border: 2px solid #a1887f; border-radius: 12px; padding: 10px; width: 100px; cursor: pointer;
-            touch-action: none; /* 터치 간섭 방지 */
+            border: 2px solid #a1887f; border-radius: 12px; padding: 10px; width: 90px; cursor: pointer;
+            position: relative; touch-action: none;
         }
-        .option-item span { font-weight: bold; margin-bottom: 5px; color: #8d6e63; pointer-events: none; }
-        .option-item img { width: 80px; pointer-events: none; } 
+        .option-item img { width: 70px; pointer-events: none; }
+        .option-item span { font-weight: bold; font-size: 0.8rem; pointer-events: none; }
+
+        /* 드래그 시 따라다니는 고스트 이미지 */
+        #ghost { position: fixed; width: 80px; pointer-events: none; z-index: 9999; display: none; opacity: 0.8; }
 
         .password-slots { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
         .slot { 
-            width: 130px; height: 120px; border: 3px dashed #bcaaa4; border-radius: 15px; 
+            width: 120px; height: 110px; border: 3px dashed #bcaaa4; border-radius: 15px; 
             position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; 
         }
         .slot.playing { border: 4px solid #4caf50 !important; background: #e8f5e9; transform: scale(1.05); }
-        .slot img { width: 85%; pointer-events: none; }
-        .slot-number { font-weight: bold; color: #2e7d32; margin-bottom: 3px; }
-
-        .delete-btn { position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; background: #e53935; color: #fff; border-radius: 50%; border: 2px solid white; font-weight: bold; cursor: pointer; z-index: 10; }
+        .slot img { width: 80%; pointer-events: none; }
         
-        button { padding: 16px 55px; font-size: 1.4rem; font-weight: bold; background-color: #6d4c41; color: #fff; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .delete-btn { position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; background: #e53935; color: #fff; border-radius: 50%; border: 2px solid white; font-weight: bold; }
+        button { padding: 16px 55px; font-size: 1.4rem; font-weight: bold; background-color: #6d4c41; color: #fff; border: none; border-radius: 50px; }
     </style>
 </head>
-<body oncontextmenu="return false;"> <div class="container">
+<body oncontextmenu="return false;">
+
+<div class="container">
     <img src="그림.png" class="header-img">
-    <h2 style="margin: 10px 0;">🔒 나만의 리듬 비밀번호</h2>
-    <p style="margin-top: 0; color: #8d6e63;">[클릭] 소리 듣기 | [꾹 눌러 드래그] 슬롯에 넣기</p>
-    
+    <h2>🔒 리듬 비밀번호 만들기</h2>
     <div class="rhythm-options">
-        <div class="option-item" draggable="true" data-id="1"><span>1번</span><img src="1.png"></div>
-        <div class="option-item" draggable="true" data-id="2"><span>2번</span><img src="2.png"></div>
-        <div class="option-item" draggable="true" data-id="3"><span>3번</span><img src="3.png"></div>
-        <div class="option-item" draggable="true" data-id="4"><span>4번</span><img src="4.png"></div>
-        <div class="option-item" draggable="true" data-id="5"><span>5번</span><img src="5.png"></div>
+        <div class="option-item" data-id="1"><span>1번</span><img src="1.png"></div>
+        <div class="option-item" data-id="2"><span>2번</span><img src="2.png"></div>
+        <div class="option-item" data-id="3"><span>3번</span><img src="3.png"></div>
+        <div class="option-item" data-id="4"><span>4번</span><img src="4.png"></div>
+        <div class="option-item" data-id="5"><span>5번</span><img src="5.png"></div>
     </div>
-
     <div class="password-slots">
-        <div class="slot" data-index="0"></div>
-        <div class="slot" data-index="1"></div>
-        <div class="slot" data-index="2"></div>
-        <div class="slot" data-index="3"></div>
+        <div class="slot" data-index="0"></div><div class="slot" data-index="1"></div><div class="slot" data-index="2"></div><div class="slot" data-index="3"></div>
     </div>
-
     <button onclick="playPassword()">▶ 비밀번호 재생</button>
 </div>
 
+<img id="ghost" src="" alt="">
+
 <script>
-    const options = document.querySelectorAll('.option-item');
+    let activeId = null;
+    let isDragging = false;
+    const ghost = document.getElementById('ghost');
     const slots = document.querySelectorAll('.slot');
     let selectedPassword = [null, null, null, null];
-    let dragId = null;
 
-    // --- [추가] 태블릿 메뉴 강제 차단 스크립트 ---
-    window.oncontextmenu = function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
+    // 터치/마우스 통합 이벤트 처리
+    document.querySelectorAll('.option-item').forEach(item => {
+        const startAction = (e) => {
+            const touch = e.touches ? e.touches[0] : e;
+            activeId = item.dataset.id;
+            isDragging = false; // 시작은 클릭으로 간주
+            
+            // 미리보기 소리 즉시 재생
+            new Audio(`${activeId}.m4a`).play().catch(()=>{});
+
+            // 고스트 이미지 준비
+            ghost.src = `${activeId}.png`;
+        };
+
+        item.addEventListener('touchstart', startAction, {passive: false});
+        item.addEventListener('mousedown', startAction);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!activeId) return;
+        isDragging = true;
+        const touch = e.touches[0];
+        ghost.style.display = 'block';
+        ghost.style.left = (touch.clientX - 40) + 'px';
+        ghost.style.top = (touch.clientY - 40) + 'px';
+        e.preventDefault(); 
+    }, {passive: false});
+
+    window.addEventListener('mousemove', (e) => {
+        if (!activeId) return;
+        isDragging = true;
+        ghost.style.display = 'block';
+        ghost.style.left = (e.clientX - 40) + 'px';
+        ghost.style.top = (e.clientY - 40) + 'px';
+    });
+
+    const endAction = (e) => {
+        if (!activeId) return;
+        const touch = e.changedTouches ? e.changedTouches[0] : e;
+        
+        ghost.style.display = 'none';
+        
+        if (isDragging) {
+            // 손가락을 뗀 위치에 슬롯이 있는지 확인
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            const slot = target ? target.closest('.slot') : null;
+            
+            if (slot) {
+                const index = slot.dataset.index;
+                selectedPassword[index] = activeId;
+                slot.innerHTML = `<img src="${activeId}.png"><button class="delete-btn" onclick="removeRhythm(${index}, event)">X</button>`;
+            }
+        }
+        activeId = null;
     };
 
-    options.forEach(opt => {
-        // 소리 재생 (mousedown과 touchstart를 모두 잡아서 반응성 강화)
-        const playPreview = (e) => {
-            const audio = new Audio(`${opt.dataset.id}.m4a`);
-            audio.play().catch(() => {});
-        };
-        
-        opt.addEventListener('mousedown', playPreview);
-        opt.addEventListener('touchstart', playPreview, {passive: true});
-
-        opt.addEventListener('dragstart', (e) => {
-            dragId = opt.dataset.id;
-        });
-    });
-
-    slots.forEach(slot => {
-        slot.addEventListener('dragover', (e) => e.preventDefault());
-        slot.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const id = dragId;
-            const index = slot.dataset.index;
-            if (id) {
-                selectedPassword[index] = id;
-                slot.innerHTML = `
-                    <div class="slot-number">${id}번</div>
-                    <img src="${id}.png">
-                    <button class="delete-btn" onclick="removeRhythm(${index}, event)">X</button>
-                `;
-            }
-        });
-    });
+    window.addEventListener('touchend', endAction);
+    window.addEventListener('mouseup', endAction);
 
     function removeRhythm(index, e) {
         e.stopPropagation();
@@ -129,5 +132,12 @@
             const slot = slots[i];
             slot.classList.add('playing');
             await new Promise(res => {
-                const audio = new Audio(`${id}.m4a`);
-                audio.play();
+                const a = new Audio(`${id}.m4a`);
+                a.play();
+                a.onended = () => { slot.classList.remove('playing'); setTimeout(res, 200); };
+            });
+        }
+    }
+</script>
+</body>
+</html>
