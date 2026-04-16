@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>리듬 비밀번호 - EASY</title>
     <style>
-        /* 1. 기본 디자인 및 배경 */
         body { 
             font-family: 'Malgun Gothic', sans-serif; text-align: center; 
             background-color: #fdf6e3; color: #5d4037; margin: 0; padding: 20px; 
@@ -18,23 +17,22 @@
         }
         .header-img { width: 100%; max-width: 600px; border-radius: 12px; margin-bottom: 15px; }
 
-        /* 2. ★ 핵심: 태블릿 시스템 메뉴 차단 (공유/저장 방지) ★ */
-        .option-item, .option-item img, .slot img {
-            -webkit-touch-callout: none;    /* iOS 길게 누르기 메뉴 차단 */
-            -webkit-user-select: none;      /* 텍스트 선택 방지 */
-            user-select: none;              /* 텍스트 선택 방지 */
-            -webkit-user-drag: none;        /* 시스템 기본 드래그 방지 */
-            touch-action: none;             /* 브라우저 터치 간섭 방지 */
+        /* [핵심 CSS] 길게 누르기 및 선택 방지 */
+        * {
+            -webkit-touch-callout: none !important; /* iOS 메뉴 차단 */
+            -webkit-user-select: none !important;    /* 텍스트 선택 차단 */
+            user-select: none !important;
+            -webkit-user-drag: none !important;    /* 시스템 드래그 차단 */
         }
 
-        /* 3. 리듬 카드 및 슬롯 디자인 */
         .rhythm-options { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .option-item { 
             display: flex; flex-direction: column; align-items: center; background: #fff; 
             border: 2px solid #a1887f; border-radius: 12px; padding: 10px; width: 100px; cursor: pointer;
+            touch-action: none; /* 터치 간섭 방지 */
         }
         .option-item span { font-weight: bold; margin-bottom: 5px; color: #8d6e63; pointer-events: none; }
-        .option-item img { width: 80px; pointer-events: none; } /* 이미지 클릭 간섭 방지 */
+        .option-item img { width: 80px; pointer-events: none; } 
 
         .password-slots { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
         .slot { 
@@ -50,12 +48,10 @@
         button { padding: 16px 55px; font-size: 1.4rem; font-weight: bold; background-color: #6d4c41; color: #fff; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
     </style>
 </head>
-<body>
-
-<div class="container">
+<body oncontextmenu="return false;"> <div class="container">
     <img src="그림.png" class="header-img">
     <h2 style="margin: 10px 0;">🔒 나만의 리듬 비밀번호</h2>
-    <p style="margin-top: 0; color: #8d6e63;">[톡] 미리듣기 | [꾹 눌러 드래그] 슬롯에 넣기</p>
+    <p style="margin-top: 0; color: #8d6e63;">[클릭] 소리 듣기 | [꾹 눌러 드래그] 슬롯에 넣기</p>
     
     <div class="rhythm-options">
         <div class="option-item" draggable="true" data-id="1"><span>1번</span><img src="1.png"></div>
@@ -81,17 +77,28 @@
     let selectedPassword = [null, null, null, null];
     let dragId = null;
 
-    // 미리듣기 및 드래그 아이디 저장
+    // --- [추가] 태블릿 메뉴 강제 차단 스크립트 ---
+    window.oncontextmenu = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    };
+
     options.forEach(opt => {
-        opt.addEventListener('click', () => {
-            new Audio(`${opt.dataset.id}.m4a`).play().catch(() => {});
-        });
+        // 소리 재생 (mousedown과 touchstart를 모두 잡아서 반응성 강화)
+        const playPreview = (e) => {
+            const audio = new Audio(`${opt.dataset.id}.m4a`);
+            audio.play().catch(() => {});
+        };
+        
+        opt.addEventListener('mousedown', playPreview);
+        opt.addEventListener('touchstart', playPreview, {passive: true});
+
         opt.addEventListener('dragstart', (e) => {
             dragId = opt.dataset.id;
         });
     });
 
-    // 드롭 처리
     slots.forEach(slot => {
         slot.addEventListener('dragover', (e) => e.preventDefault());
         slot.addEventListener('drop', (e) => {
@@ -115,7 +122,6 @@
         selectedPassword[index] = null;
     }
 
-    // 재생 로직 (이지 모드: 리듬 사이 0.2초 간격)
     async function playPassword() {
         for (let i = 0; i < selectedPassword.length; i++) {
             const id = selectedPassword[i];
