@@ -3,48 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>리듬 비밀번호 - 최종 완성형</title>
+    <title>리듬 비밀번호 - 소리 선택형</title>
     <style>
-        /* 기본 배경 및 폰트 설정 */
-        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #fdf6e3; color: #5d4037; margin: 0; padding: 20px; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
-        .container { max-width: 850px; margin: 0 auto; background: rgba(255,255,255,0.95); padding: 25px; border-radius: 25px; border: 2px solid #d7ccc8; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .header-img { width: 100%; max-width: 500px; border-radius: 15px; margin-bottom: 10px; }
+        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #fdf6e3; color: #5d4037; margin: 0; padding: 15px; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+        .container { max-width: 850px; margin: 0 auto; background: rgba(255,255,255,0.95); padding: 20px; border-radius: 25px; border: 2px solid #d7ccc8; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .header-img { width: 100%; max-width: 450px; border-radius: 15px; margin-bottom: 10px; }
 
         /* 리듬 카드 영역 */
-        .rhythm-options { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+        .rhythm-options { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
         .option-item { 
             display: flex; flex-direction: column; align-items: center; background: #fff; 
-            border: 3px solid #a1887f; border-radius: 15px; padding: 12px; width: 95px; cursor: pointer;
-            transition: all 0.2s ease;
+            border: 3px solid #a1887f; border-radius: 15px; padding: 10px; width: 100px; cursor: pointer;
+            position: relative; transition: all 0.2s ease;
         }
-        /* 선택 시 주황색 테두리로 강조 */
-        .option-item.selected { border: 5px solid #ff9800; background: #fff8e1; transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255,152,0,0.3); }
-        .option-item img { width: 75px; pointer-events: none; }
-        .option-item span { font-weight: bold; font-size: 1rem; margin-bottom: 5px; color: #5d4037; }
-
-        /* 비밀번호 슬롯 영역 */
-        .password-slots { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-        .slot { 
-            width: 140px; height: 150px; border: 3px dashed #bcaaa4; border-radius: 20px; 
-            position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; 
-            cursor: pointer; transition: 0.2s;
-        }
-        /* 재생 중일 때 초록색 강조 */
-        .slot.playing { border: 5px solid #4caf50 !important; background: #e8f5e9; transform: scale(1.05); }
-        .slot img { width: 85%; pointer-events: none; margin-bottom: 10px; }
+        .option-item.selected { border: 5px solid #ff9800; background: #fff8e1; transform: translateY(-3px); }
+        .option-item img { width: 75px; pointer-events: none; margin-bottom: 5px; }
         
-        /* 슬롯 내 숫자 표시 */
-        .slot-result { font-size: 1.5rem; font-weight: 900; color: #2e7d32; background: #c8e6c9; width: 100%; padding: 5px 0; border-radius: 0 0 17px 17px; position: absolute; bottom: 0; }
+        /* 미리듣기 스피커 버튼 */
+        .listen-btn { 
+            background: #795548; color: white; border: none; border-radius: 8px; 
+            padding: 3px 10px; font-size: 0.8rem; cursor: pointer; margin-top: 5px;
+        }
+        .listen-btn:active { background: #3e2723; }
 
-        /* 삭제 버튼 */
-        .delete-btn { position: absolute; top: -10px; right: -10px; width: 30px; height: 30px; background: #e53935; color: #fff; border-radius: 50%; border: 2px solid white; font-weight: bold; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
-
-        /* 하단 결과 텍스트 영역 */
-        .password-display { font-size: 1.8rem; font-weight: bold; color: #795548; margin-bottom: 20px; padding: 10px; background: #efebe9; border-radius: 15px; min-height: 40px; }
+        /* 비밀번호 텍스트 */
+        .password-display { font-size: 1.6rem; font-weight: bold; color: #795548; margin: 15px 0; padding: 10px; background: #efebe9; border-radius: 15px; }
         .password-display span { color: #d32f2f; margin: 0 5px; }
 
-        button { padding: 18px 60px; font-size: 1.5rem; font-weight: bold; background-color: #5d4037; color: #fff; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        button:active { transform: scale(0.98); }
+        /* 슬롯 영역 */
+        .password-slots { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .slot { 
+            width: 130px; height: 140px; border: 3px dashed #bcaaa4; border-radius: 20px; 
+            position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; 
+            cursor: pointer;
+        }
+        .slot.playing { border: 5px solid #4caf50 !important; background: #e8f5e9; transform: scale(1.05); }
+        .slot img { width: 85%; pointer-events: none; margin-bottom: 15px; }
+        .slot-result { font-size: 1.3rem; font-weight: 900; color: #2e7d32; background: #c8e6c9; width: 100%; padding: 3px 0; border-radius: 0 0 17px 17px; position: absolute; bottom: 0; }
+
+        .delete-btn { position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; background: #e53935; color: #fff; border-radius: 50%; border: 2px solid white; font-weight: bold; cursor: pointer; z-index: 10; }
+
+        .main-play-btn { padding: 18px 60px; font-size: 1.5rem; font-weight: bold; background-color: #5d4037; color: #fff; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -52,14 +51,34 @@
 <div class="container">
     <img src="그림.png" class="header-img">
     <h2 style="margin: 5px 0;">🔒 리듬 비밀번호 만들기</h2>
-    <p style="margin: 0 0 20px 0; color: #8d6e63;">[번호 선택] → [빈 칸 터치]</p>
+    <p style="margin: 0 0 15px 0; color: #8d6e63; font-size: 0.9rem;">[악보] 선택 | [스피커] 소리 듣기 | [아래 칸] 배치</p>
 
     <div class="rhythm-options">
-        <div class="option-item" onclick="selectRhythm('1', this)"><span>1번</span><img src="1.png"></div>
-        <div class="option-item" onclick="selectRhythm('2', this)"><span>2번</span><img src="2.png"></div>
-        <div class="option-item" onclick="selectRhythm('3', this)"><span>3번</span><img src="3.png"></div>
-        <div class="option-item" onclick="selectRhythm('4', this)"><span>4번</span><img src="4.png"></div>
-        <div class="option-item" onclick="selectRhythm('5', this)"><span>5번</span><img src="5.png"></div>
+        <div class="option-item" onclick="selectRhythm('1', this)">
+            <span>1번</span>
+            <img src="1.png">
+            <button class="listen-btn" onclick="playOnly('1', event)">🔊 소리</button>
+        </div>
+        <div class="option-item" onclick="selectRhythm('2', this)">
+            <span>2번</span>
+            <img src="2.png">
+            <button class="listen-btn" onclick="playOnly('2', event)">🔊 소리</button>
+        </div>
+        <div class="option-item" onclick="selectRhythm('3', this)">
+            <span>3번</span>
+            <img src="3.png">
+            <button class="listen-btn" onclick="playOnly('3', event)">🔊 소리</button>
+        </div>
+        <div class="option-item" onclick="selectRhythm('4', this)">
+            <span>4번</span>
+            <img src="4.png">
+            <button class="listen-btn" onclick="playOnly('4', event)">🔊 소리</button>
+        </div>
+        <div class="option-item" onclick="selectRhythm('5', this)">
+            <span>5번</span>
+            <img src="5.png">
+            <button class="listen-btn" onclick="playOnly('5', event)">🔊 소리</button>
+        </div>
     </div>
 
     <div class="password-display" id="final-code">비밀번호: ____</div>
@@ -71,7 +90,7 @@
         <div class="slot" onclick="placeRhythm(3)"></div>
     </div>
 
-    <button onclick="playPassword()">▶ 비밀번호 재생</button>
+    <button class="main-play-btn" onclick="playPassword()">▶ 비밀번호 전체 재생</button>
 </div>
 
 <script>
@@ -80,18 +99,22 @@
     const slots = document.querySelectorAll('.slot');
     const codeDisplay = document.getElementById('final-code');
 
-    // 1. 리듬 카드 선택
+    // 1. 소리만 듣기 (이벤트 전파 방지 적용)
+    function playOnly(id, event) {
+        event.stopPropagation(); // 부모 요소인 option-item의 클릭 이벤트가 실행되지 않게 막음
+        new Audio(`${id}.m4a`).play().catch(() => {});
+    }
+
+    // 2. 리듬 카드 선택 (소리 안 남)
     function selectRhythm(id, element) {
         currentId = id;
-        new Audio(`${id}.m4a`).play().catch(() => {});
         document.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('selected'));
         element.classList.add('selected');
     }
 
-    // 2. 슬롯에 배치
+    // 3. 슬롯에 배치
     function placeRhythm(index) {
         if (!currentId) return;
-
         selectedPassword[index] = currentId;
         slots[index].innerHTML = `
             <img src="${currentId}.png">
@@ -101,7 +124,6 @@
         updateCodeText();
     }
 
-    // 3. 삭제 기능
     function removeRhythm(index, e) {
         e.stopPropagation();
         slots[index].innerHTML = '';
@@ -109,21 +131,17 @@
         updateCodeText();
     }
 
-    // 4. 하단 텍스트 업데이트
     function updateCodeText() {
         const text = selectedPassword.map(id => id ? id : "_").join(" ");
         codeDisplay.innerHTML = `비밀번호: <span>${text}</span>`;
     }
 
-    // 5. 재생 로직
     async function playPassword() {
         for (let i = 0; i < selectedPassword.length; i++) {
             const id = selectedPassword[i];
             if (!id) continue;
-
             const slot = slots[i];
             slot.classList.add('playing');
-            
             await new Promise(res => {
                 const audio = new Audio(`${id}.m4a`);
                 audio.play();
